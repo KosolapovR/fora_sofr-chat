@@ -7,12 +7,14 @@ import {
     Route
 } from "react-router-dom";
 
+
 function App() {
     return (
         <div className="App">
             <Switch>
-                <Route exact path='/login' render={Login}/>
-                <Route path='/' render={ChatApp}/>
+                <Route exact path='/login' render={() => <Login/>}/>
+                <Route path='/room/:id' render={() => <ChatApp isJoined={true}/>}/>
+                <Route exact path='/' render={() => <ChatApp/>}/>
             </Switch>
         </div>
     );

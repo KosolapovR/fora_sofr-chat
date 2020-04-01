@@ -15,6 +15,8 @@ import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Container from "@material-ui/core/Container";
+import {connect} from "react-redux";
+import {createNickName} from "../../../state/chat";
 
 const useStyles = makeStyles(theme => ({
     grow: {
@@ -24,10 +26,9 @@ const useStyles = makeStyles(theme => ({
         marginRight: theme.spacing(2),
     },
     title: {
-        display: 'none',
-        [theme.breakpoints.up('sm')]: {
-            display: 'block',
-        },
+    },
+    nickname: {
+        padding: '15px 7px'
     },
     search: {
         position: 'relative',
@@ -78,7 +79,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TopNavigation = () => {
+const TopNavigation = ({user}) => {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -169,11 +170,14 @@ const TopNavigation = () => {
                         </Typography>
                         <div className={classes.grow}/>
                         <div className={classes.sectionDesktop}>
-                            <IconButton aria-label="show 4 new mails" color="inherit">
+{/*                            <IconButton aria-label="show 4 new mails" color="inherit">
                                 <Badge badgeContent={4} color="secondary">
                                     <MailIcon/>
                                 </Badge>
-                            </IconButton>
+                            </IconButton>*/}
+                            <Typography  className={classes.nickname} component="span" noWrap>
+                                {user}
+                            </Typography>
                             <IconButton
                                 edge="end"
                                 aria-label="account of current user"
@@ -205,4 +209,9 @@ const TopNavigation = () => {
     );
 };
 
-export default TopNavigation;
+const mapStateToProps = state => ({
+    user: state.chat.user
+});
+
+export default connect(mapStateToProps, {createNickName})(TopNavigation);
+
