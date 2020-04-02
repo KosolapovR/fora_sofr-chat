@@ -1,7 +1,7 @@
-import {CREATE_NICKNAME, CREATE_ROOM, LEAVE_ROOM, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
+import {CREATE_NICKNAME, CREATE_ROOM, LEAVE_ROOM, SAVE_MESSAGE, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
 
 let rooms = JSON.parse(sessionStorage.getItem('rooms'));
-if(!rooms) rooms = [];
+if (!rooms) rooms = [];
 
 const initialState = {
     user: sessionStorage.getItem('user'),
@@ -29,23 +29,51 @@ const reducer = (state = initialState, action) => {
             return {...state, rooms: action.payload};
         }
         case SEND_MESSAGE: {
-
-            let index = state.findIndex((el) => el.hash === action.payload.hash);
-
+            const index = state.rooms.findIndex(r => r.hash === action.payload.roomId);
             const newRooms = [...state.rooms];
-            newRooms[index].messages = [...state.rooms[index].messages,
-                {
+
+
+            newRooms[index].messages = newRooms[index].messages
+                ?
+                [...state.rooms[index].messages, {
+                    author: action.payload.author,
+                    text: action.payload.text,
+                    date: action.payload.date,
+                    isMyMessage: action.payload.isMyMessage
+                }]
+                :
+                [{
+                    author: action.payload.author,
+                    text: action.payload.text,
+                    date: action.payload.date,
+                    isMyMessage: action.payload.isMyMessage
+                }];
+
+            return {...state, rooms: newRooms};
+        }
+        case SAVE_PREV_URL: {
+            return {...state, prevUrl: action.payload.id};
+        }
+        case SAVE_MESSAGE: {
+            const index = state.rooms.findIndex(r => r.hash === action.payload.roomId);
+            const newRooms = [...state.rooms];
+
+
+            newRooms[index].messages = newRooms[index].messages
+                ?
+                [...state.rooms[index].messages, {
                     author: action.payload.author,
                     text: action.payload.text,
                     date: action.payload.date
-                }
-            ];
-            return {...state, rooms: newRooms};
-        }
+                }]
+                :
+                [{
+                    author: action.payload.author,
+                    text: action.payload.text,
+                    date: action.payload.date
+                }];
 
-        case SAVE_PREV_URL: {
-            console.log(SAVE_PREV_URL);
-            return {...state, prevUrl: action.payload.id};
+            return {...state, rooms: newRooms};
         }
         default: {
             return state

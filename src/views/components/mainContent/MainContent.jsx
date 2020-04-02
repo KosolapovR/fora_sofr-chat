@@ -7,11 +7,13 @@ import Chat from "./chat";
 import Button from "@material-ui/core/Button";
 import shortHash from 'short-hash';
 import {connect} from "react-redux";
-import {createRoom, leaveRoom} from "../../../state/chat";
+import {reset} from 'redux-form';
+import {createRoom, leaveRoom, saveMessage} from "../../../state/chat";
 import {useParams} from "react-router-dom";
 import {useHistory} from "react-router-dom";
 import {findRoom} from "../../../utils/findRoom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import {sendMessage} from "../../../state/chat/operations";
 
 const useStyle = makeStyles({
     root: {
@@ -50,9 +52,11 @@ const MainContent = ({
                          rooms,
                          isJoined,
                          user,
-                         leaveRoom
+                         leaveRoom,
+                         resetForm,
+                         sendMessage,
+                         saveMessage
                      }) => {
-
     const styles = useStyle();
 
     const [showAlert, setShowAlert] = useState(false);
@@ -103,13 +107,20 @@ const MainContent = ({
 
     useEffect(() => {
         socket.emit('get_users_in_room', {id});
-
     }, [id]);
 
     useEffect(() => {
-        socket.on('users_in_room', users => {
-            console.log('Пересчет онлайн юзеров');
-            setUsersOnline(users);
+        socket.on('message', message => {
+            console.log(message);
+            saveMessage(message);
+        });
+    }, []);
+
+    useEffect(() => {
+        socket.on('users_in_room', data => {
+            if (data.hash === roomId.current) {
+                setUsersOnline(data.users);
+            }
         });
     }, []);
 
@@ -119,6 +130,8 @@ const MainContent = ({
 
     const handleSubmit = ({message}) => {
         socket.emit('send_message', {message, roomId: id});
+        sendMessage({text: message, date: Date.now(), roomId: id, author: 'Я', isMyMessage: true});
+        resetForm();
     };
 
     const handleLeaveRoom = () => {
@@ -131,6 +144,7 @@ const MainContent = ({
 
     const currentRoom = rooms.find(r => r.hash === id);
     const roomName = currentRoom ? currentRoom.name : 'комната';
+    const messages = currentRoom ? currentRoom.messages : [];
     return (
         <Box className={styles.root} display="flex" flexDirection='column' justifyContent='space-between'>
 
@@ -177,7 +191,14 @@ const MainContent = ({
                         className={styles.chatWindow}
                         item xs={9}>
                         {isJoined && (
-                            <Chat handleSubmit={handleSubmit} showAlert={showAlert} joinedUserName={joinedUserName}/>)}
+                            <Chat
+                                handleSubmit={handleSubmit}
+                                showAlert={showAlert}
+                                joinedUserName={joinedUserName}
+                                messages={messages}
+                                /*messages={[{author: 'Жанна', date: 12315464545, text: 'lorem sdfsfg sfg adsad asdadsf s sfg ad SFG A ADF ASG ASD SDFDf r wef wef q q' }]}*/
+                            />
+                        )}
                     </Grid>
                 </Grid>
             </Box>
@@ -191,4 +212,14 @@ const mapStateToProps = state => ({
     user: state.chat.user
 });
 
-export default connect(mapStateToProps, {createRoom, leaveRoom})(MainContent);
+function mapDispatchToProps(dispatch) {
+    return {
+        createRoom: (room) => dispatch(createRoom(room)),
+        leaveRoom: (id) => dispatch(leaveRoom(id)),
+        resetForm: () => dispatch(reset('messageForm')),
+        saveMessage: (message) => dispatch(saveMessage(message)),
+        sendMessage: (message) => dispatch(sendMessage(message))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainContent);

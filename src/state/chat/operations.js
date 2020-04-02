@@ -1,4 +1,4 @@
-import {createNickNameAC, leaveRoomAC, savePrevUrlAC, sendMessageAC} from "./actions";
+import {createNickNameAC, leaveRoomAC, saveMessageAC, savePrevUrlAC, sendMessageAC} from "./actions";
 import {createRoomAC} from "./actions";
 import axios from 'axios';
 
@@ -40,10 +40,17 @@ const savePrevUrl = (url) => {
     }
 };
 
+const saveMessage = (message) => {
+    return (dispatch) => {
+        dispatch(saveMessageAC(message))
+    }
+};
+
 export {
     sendMessage,
     createNickName,
     createRoom,
     leaveRoom,
-    savePrevUrl
+    savePrevUrl,
+    saveMessage
 }

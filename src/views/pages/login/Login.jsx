@@ -5,6 +5,8 @@ import {createNickName} from "../../../state/chat";
 import {Redirect} from "react-router-dom";
 
 const Login = ({createNickName, user, prevUrl}) => {
+
+
     const handleSubmit = ({nickname}) => {
         createNickName(nickname);
     };

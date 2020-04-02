@@ -22,12 +22,19 @@ app.get('/', function (req, res) {
 
 io.on('connection', function (socket) {
     console.log('a user connected');
+    socket.on('newUser', user => {
+        socket.user = user;
+    });
 
     socket.on('join_room', data => {
-        console.log(data.user, 'вошедший');
-        const existedRoom = rooms.filter(room => room.hash === data.room.hash);
-        if (existedRoom.length) {
-            socket.user = data.user;
+        const existedRoom = rooms.find(room => room.hash === data.room.hash);
+        if (existedRoom) {
+            if (socket.user) {
+                socket.user = {...socket.user, rooms: [...socket.user.rooms, existedRoom]};
+            } else {
+                socket.user = {name: data.user.name, rooms: [existedRoom]};
+            }
+
             socket.join(data.room.hash);
             socket.broadcast.to(data.room.hash).emit('user_join_room', {
                 user: {
@@ -47,9 +54,13 @@ io.on('connection', function (socket) {
         socket.join(hash);
 
         rooms = [...rooms, {hash: hash, name: name}];
+        if (socket.user) {
+            socket.user = {...socket.user, rooms: [...socket.user.rooms, {hash: hash, name: name}]};
+        } else {
+            socket.user = {name: data.user.name, rooms: [{hash: hash, name: name}]};
+        }
 
-        socket.user = data.user;
-
+        console.log('socket rooms', socket.user);
         socket.emit('room', {name, hash})
     });
 
@@ -70,14 +81,19 @@ io.on('connection', function (socket) {
     });
 
     socket.on('send_message', ({message, roomId}) => {
-        socket.broadcast.to(roomId).emit('message', message);
-        console.log('Пришло сообщение', message);
-        console.log('ID Room:', roomId);
+        socket.broadcast.to(roomId).emit('message', {author: socket.user.name, text: message, date: Date.now(), roomId});
     });
 
-    socket.on('disconnect', function (socket) {
+
+    socket.on('disconnect', () => {
         console.log('disconnected');
+        if(socket.user){
+            socket.user.rooms.map(r => {
+                emitUsersOnline(r.hash);
+            })
+        }
     });
+
 });
 
 
@@ -85,14 +101,14 @@ http.listen(port, function () {
     console.log(`listening on *:${port}`);
 });
 
-function emitUsersOnline(roomHash){
+function emitUsersOnline(roomHash) {
     if (io.nsps["/"].adapter.rooms[roomHash]) {
         const clients = io.nsps["/"].adapter.rooms[roomHash].sockets;
         const socketsId = (typeof clients !== 'undefined') ? Object.keys(clients) : [];
         const sockets = socketsId.map(s => io.sockets.connected[s]);
         const users = sockets.map(s => s.user);
 
-        io.to(roomHash).emit('users_in_room', users);
+        io.to(roomHash).emit('users_in_room', {users, hash: roomHash});
     }
 }
 

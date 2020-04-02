@@ -18,28 +18,29 @@ const useStyles = makeStyles((theme) => ({
     input: {
         flexGrow: 1
     },
+    chatHistory: {
+        padding: '50px 30px 20px',
+        borderBottom: '2px solid white',
+        overflowY: 'scroll',
+        height: '100%'
+    }
 }));
 
-function Chat({handleSubmit, joinedUserName, showAlert}) {
+function Chat({handleSubmit, joinedUserName, showAlert, messages = []}) {
 
     const styles = useStyles();
 
-    const messages = [{author: 'Жанна', text: 'Привет всем', date: Date.now()},
-        {author: 'Никита', text: 'Хай', date: Date.now()},
-        {author: 'Я', text: 'Салют', date: Date.now()}];
-
-    console.log('render Chat');
 
     return (
         <Box className={styles.root} display="flex" flexDirection="column" justifyContent='space-between'>
             <TransitionAlert name={joinedUserName} show={showAlert}/>
             <Box className={styles.messages} flexGrow={1}>
-                <ul>
-                    {messages.map((m, i) => <ChatMessage key={i} message={m}/>)}
-                </ul>
+                    <ul className={styles.chatHistory}>
+                        {messages.map((m, i) => <ChatMessage key={i} message={m}/>)}
+                    </ul>
             </Box>
             <Box>
-                <ChatForm onSubmit={handleSubmit} />
+                <ChatForm onSubmit={handleSubmit}/>
             </Box>
         </Box>
     );

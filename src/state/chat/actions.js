@@ -1,4 +1,4 @@
-import {CREATE_NICKNAME, CREATE_ROOM, LEAVE_ROOM, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
+import {CREATE_NICKNAME, CREATE_ROOM, LEAVE_ROOM, SAVE_MESSAGE, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
 
 const createNickNameAC = nickname => ({
     type: CREATE_NICKNAME,
@@ -25,10 +25,16 @@ const savePrevUrlAC = payload => ({
     payload
 });
 
+const saveMessageAC = payload => ({
+    type: SAVE_MESSAGE,
+    payload
+});
+
 export {
     createNickNameAC,
     createRoomAC,
     leaveRoomAC,
     sendMessageAC,
-    savePrevUrlAC
+    savePrevUrlAC,
+    saveMessageAC
 }

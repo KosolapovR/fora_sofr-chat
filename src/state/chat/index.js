@@ -1,11 +1,12 @@
-import {createNickName, createRoom, savePrevUrl, leaveRoom} from "./operations";
+import {createNickName, createRoom, savePrevUrl, leaveRoom, saveMessage} from "./operations";
 import {default as reducer} from './reducers';
 
 export {
     createNickName,
     leaveRoom,
     createRoom,
-    savePrevUrl
+    savePrevUrl,
+    saveMessage
 }
 
 export default reducer;
