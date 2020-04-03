@@ -1,18 +1,16 @@
-import {createNickNameAC, leaveRoomAC, saveMessageAC, savePrevUrlAC, sendMessageAC} from "./actions";
-import {createRoomAC} from "./actions";
-import axios from 'axios';
+import {createUserAC, createRoomAC, leaveRoomAC, saveMessageAC, savePrevUrlAC, sendMessageAC} from "./actions";
 
-const createNickName = (nickname) => {
+const createUser = (user) => {
     return (dispatch) => {
-        sessionStorage.setItem('user', nickname);
-        dispatch(createNickNameAC(nickname));
+        sessionStorage.setItem('user', JSON.stringify(user));
+        dispatch(createUserAC(user));
     }
 };
 
 const createRoom = (room) => {
     return (dispatch) => {
         let currentRooms = JSON.parse(sessionStorage.getItem('rooms'));
-        if(!currentRooms) currentRooms = [];
+        if (!currentRooms) currentRooms = [];
         const newRooms = JSON.stringify([...currentRooms, room]);
         sessionStorage.setItem('rooms', newRooms);
         dispatch(createRoomAC(room));
@@ -20,12 +18,12 @@ const createRoom = (room) => {
 };
 
 const leaveRoom = (hash) => {
-  return (dispatch) => {
-      let currentRooms = JSON.parse(sessionStorage.getItem('rooms'));
-      const newRooms = currentRooms.filter(r => r.hash !== hash);
-      sessionStorage.setItem('rooms', JSON.stringify(newRooms));
-      dispatch(leaveRoomAC(newRooms));
-  }
+    return (dispatch) => {
+        let currentRooms = JSON.parse(sessionStorage.getItem('rooms'));
+        const newRooms = currentRooms.filter(r => r.hash !== hash);
+        sessionStorage.setItem('rooms', JSON.stringify(newRooms));
+        dispatch(leaveRoomAC(newRooms));
+    }
 };
 
 const sendMessage = (message) => {
@@ -48,7 +46,7 @@ const saveMessage = (message) => {
 
 export {
     sendMessage,
-    createNickName,
+    createUser,
     createRoom,
     leaveRoom,
     savePrevUrl,

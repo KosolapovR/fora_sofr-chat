@@ -27,7 +27,7 @@ const renderedInput = ({input, ...props}) => {
     )
 };
 
-const ChatForm = ({handleSubmit}) => {
+const ChatForm = ({handleSubmit, onChange}) => {
 
     const styles = useStyles();
 
@@ -36,7 +36,7 @@ const ChatForm = ({handleSubmit}) => {
             onSubmit={handleSubmit}
             className={styles.form}
         >
-            <Field  className={styles.input} name='message' type='text' component={renderedInput}/>
+            <Field  className={styles.input} name='message' type='text' onChange={onChange} component={renderedInput}/>
             <Button type='submit' variant='contained'>Отправить</Button>
         </form>
     );

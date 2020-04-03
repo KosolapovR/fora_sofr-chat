@@ -1,29 +1,55 @@
 import React from 'react';
-import {Input} from "@material-ui/core";
+import {Input, TextField} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
 import {Field, reduxForm} from "redux-form";
+import IconsList from "../iconsList";
+import {maxLength15} from "../../../../utils/formValidator";
 
-const useStyles =makeStyles({
+const useStyles = makeStyles({
     form: {
         margin: '50px auto',
         width: 'fit-content'
+    },
+    button: {
+        marginLeft: '10px'
     }
 });
 
-const renderedInput = ({input}) => {
-    return <Input placeholder="Введите ваш никнейм" {...input}/>
+const renderedInput = ({input, meta: {touched, error, warning}}) => {
+    if (error) {
+        console.log(error);
+    }
+    return (<>
+        {touched && error ?
+            <TextField
+                required
+                error
+                helperText={error}
+                {...input}
+            />
+            :
+            <TextField
+                required
+                placeholder="Введите ваш никнейм"
+                {...input}
+            />}
+    </>);
+
 };
 
-function LoginForm({handleSubmit}) {
+function LoginForm({handleSubmit, handleChange, selectedIcon}) {
 
     const styles = useStyles();
 
     return (
-        <form onSubmit={handleSubmit} className={styles.form}>
-            <Field name="nickname" type="text" component={renderedInput}/>
-            <Button type='submit' variant="contained" color="primary">Сохранить</Button>
-        </form>
+        <>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <Field name="nickname" type="text" validate={[maxLength15]} component={renderedInput}/>
+                <Button className={styles.button} type='submit' variant="contained" color="primary">Сохранить</Button>
+            </form>
+            <IconsList handleChange={handleChange} selectedIcon={selectedIcon}/>
+        </>
     );
 }
 

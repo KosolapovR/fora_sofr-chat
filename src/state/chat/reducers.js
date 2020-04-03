@@ -1,18 +1,18 @@
-import {CREATE_NICKNAME, CREATE_ROOM, LEAVE_ROOM, SAVE_MESSAGE, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
+import {CREATE_USER, CREATE_ROOM, LEAVE_ROOM, SAVE_MESSAGE, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
 
 let rooms = JSON.parse(sessionStorage.getItem('rooms'));
 if (!rooms) rooms = [];
 
 const initialState = {
-    user: sessionStorage.getItem('user'),
+    user: JSON.parse(sessionStorage.getItem('user')),
     rooms: rooms,
     prevUrl: null
 };
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case CREATE_NICKNAME: {
-            return {...state, user: action.nickname}
+        case CREATE_USER: {
+            return {...state, user: {name: action.payload.name, icon: action.payload.icon}}
         }
         case CREATE_ROOM: {
             return {
@@ -39,6 +39,7 @@ const reducer = (state = initialState, action) => {
                     author: action.payload.author,
                     text: action.payload.text,
                     date: action.payload.date,
+                    icon: action.payload.icon,
                     isMyMessage: action.payload.isMyMessage
                 }]
                 :
@@ -46,6 +47,7 @@ const reducer = (state = initialState, action) => {
                     author: action.payload.author,
                     text: action.payload.text,
                     date: action.payload.date,
+                    icon: action.payload.icon,
                     isMyMessage: action.payload.isMyMessage
                 }];
 
@@ -64,13 +66,15 @@ const reducer = (state = initialState, action) => {
                 [...state.rooms[index].messages, {
                     author: action.payload.author,
                     text: action.payload.text,
-                    date: action.payload.date
+                    date: action.payload.date,
+                    icon: action.payload.icon
                 }]
                 :
                 [{
                     author: action.payload.author,
                     text: action.payload.text,
-                    date: action.payload.date
+                    date: action.payload.date,
+                    icon: action.payload.icon,
                 }];
 
             return {...state, rooms: newRooms};

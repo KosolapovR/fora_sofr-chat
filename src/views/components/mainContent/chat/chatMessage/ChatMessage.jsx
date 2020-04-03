@@ -7,11 +7,15 @@ import {Box} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     msgLeft: {
-        margin: '10px 0',
+        maxWidth: '660px',
+        margin: '10px auto',
         padding: '8px, 16px',
-        listStyle: 'none'
+        listStyle: 'none',
+        overflow: 'hidden'
     },
     msgAuthor: {
+        maxWidth: 'min-content',
+        textAlign: 'center',
         fontSize: '14px',
         padding: '5px 10px',
         color: '#888',
@@ -23,13 +27,19 @@ const useStyles = makeStyles((theme) => ({
         display: 'block',
         fontSize: '12px'
     },
+    myMsgTime: {
+        textAlign: 'right'
+    },
     msgText: {
+        margin: '0 6px',
         width: 'fit-content',
         minWidth: '110px',
         padding: '14px',
         borderRadius: '8px',
         color: '#FFF',
         lineHeight: '20px',
+        overflow: 'hidden',
+        boxShadow: '2px 2px 5px 1px rgba(0, 0, 0, 0.3)'
     },
     myMsg: {
         textAlign: 'right',
@@ -43,12 +53,14 @@ const useStyles = makeStyles((theme) => ({
     },
     root: {
         margin: '0'
+    },
+    avatarWrapper: {
+        padding: '0 10px',
     }
 }));
 
 
 function ChatMessage({message}) {
-    console.log(message);
     const {author, text, date} = message;
     const msgDate = (new Date(date)).toISOString().substring(0, 10)
     const msgTime = (new Date(date)).getHours() + ':' + (new Date(date)).getMinutes();
@@ -57,45 +69,43 @@ function ChatMessage({message}) {
 
     if (message.isMyMessage) {
         return (
-            <Grid className={styles.msgLeft} container>
-                <Grid item xs={12} sm={3}>
+            <Grid className={styles.msgLeft} container justify='flex-end' wrap='nowrap'>
+                <Grid item>
+                    <Box className={`${styles.msgText} ${styles.myMsg}`}>
+                        {text}
+                    </Box>
+                    <span className={`${styles.msgTime} ${styles.myMsgTime}`}>{time}</span>
                 </Grid>
-                <Grid container item xs={12} md={6} justify='flex-end'>
-                    <Grid item>
-                        <Box className={`${styles.msgText} ${styles.myMsg}`}>
-                            {text}
-                        </Box>
-                        <span className={styles.msgTime}>{time}</span>
-                    </Grid>
-
-                </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item>
                     <Typography
                         className={styles.msgAuthor}
                         variant='h6'>
                         {author}
                     </Typography>
+                    <Box className={styles.avatarWrapper}>
+                        <Avatar alt='avatar' src={message.icon}/>
+                    </Box>
                 </Grid>
             </Grid>
         )
     } else {
         return (
-            <Grid container className={styles.msgLeft}>
-                <Grid item xs={12} sm={3}>
+            <Grid className={styles.msgLeft} container wrap='nowrap'>
+                <Grid item>
                     <Typography
-                        className={`${styles.msgAuthor} ${styles.otherName}`}
+                        className={styles.msgAuthor}
                         variant='h6'>
                         {author}
                     </Typography>
+                    <Box className={styles.avatarWrapper}>
+                        <Avatar alt='avatar' src={message.icon}/>
+                    </Box>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    <div className={`${styles.msgText} ${styles.otherMsg}`}>
+                <Grid item>
+                    <Box className={`${styles.msgText} ${styles.otherMsg}`}>
                         {text}
-                    </div>
+                    </Box>
                     <span className={styles.msgTime}>{time}</span>
-                </Grid>
-                <Grid item xs={12} sm={3}>
-
                 </Grid>
             </Grid>
         );

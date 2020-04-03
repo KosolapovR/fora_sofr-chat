@@ -1,14 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import LoginForm from "./loginForm/LoginForm";
 import {connect} from "react-redux";
-import {createNickName} from "../../../state/chat";
+import {createUser} from "../../../state/chat";
 import {Redirect} from "react-router-dom";
 
-const Login = ({createNickName, user, prevUrl}) => {
+const Login = ({createUser, user, prevUrl}) => {
 
+    const [selectedIcon, setSelectedIcon] = useState('http://localhost:3000/icons/default.svg');
 
     const handleSubmit = ({nickname}) => {
-        createNickName(nickname);
+        createUser({name: nickname, icon: selectedIcon});
     };
 
     const redirectUrl = prevUrl ? `/room/${prevUrl}` : "/";
@@ -16,7 +17,11 @@ const Login = ({createNickName, user, prevUrl}) => {
     return (
         <>
             {user && <Redirect to={redirectUrl}/>}
-            <LoginForm onSubmit={handleSubmit}/>
+            <LoginForm
+                selectedIcon={selectedIcon}
+                handleChange={icon => setSelectedIcon(icon)}
+                onSubmit={handleSubmit}
+            />
         </>
     );
 };
@@ -26,4 +31,4 @@ const mapStateToProps = state => ({
     prevUrl: state.chat.prevUrl
 });
 
-export default connect(mapStateToProps, {createNickName})(Login);
+export default connect(mapStateToProps, {createUser})(Login);

@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
-import {useHistory} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
+import {reset} from "redux-form";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,12 +20,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const RoomsList = ({rooms}) => {
+const RoomsList = ({rooms, resetForm}) => {
     const classes = useStyles();
+
+    let {id} = useParams();
+
+    const roomId = useRef(id);
 
     const history = useHistory();
 
     const handleSelectRoom = (room) => {
+        resetForm();
         history.push({
             pathname: `/room/${room.hash}`
         });
@@ -38,7 +45,7 @@ const RoomsList = ({rooms}) => {
                         primary={
                             <Button
                                 color='primary'
-                                variant="contained"
+                                style={{color: r.name, background: '#DEDEDE', fontWeight: 600, width:'100%'}}
                                 onClick={() => {handleSelectRoom(r)}}
                             >
                                 {r.name}
@@ -52,4 +59,10 @@ const RoomsList = ({rooms}) => {
     );
 };
 
-export default RoomsList;
+function mapDispatchToProps(dispatch) {
+    return {
+        resetForm: () => dispatch(reset('messageForm'))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(RoomsList);

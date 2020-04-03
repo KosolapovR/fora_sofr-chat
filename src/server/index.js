@@ -32,13 +32,14 @@ io.on('connection', function (socket) {
             if (socket.user) {
                 socket.user = {...socket.user, rooms: [...socket.user.rooms, existedRoom]};
             } else {
-                socket.user = {name: data.user.name, rooms: [existedRoom]};
+                socket.user = {name: data.user.name, icon: data.user.icon, rooms: [existedRoom]};
             }
 
             socket.join(data.room.hash);
             socket.broadcast.to(data.room.hash).emit('user_join_room', {
                 user: {
-                    name: socket.user.name
+                    name: socket.user.name,
+                    icon: socket.user.icon
                 },
                 room: {
                     hash: data.room.hash,
@@ -57,7 +58,7 @@ io.on('connection', function (socket) {
         if (socket.user) {
             socket.user = {...socket.user, rooms: [...socket.user.rooms, {hash: hash, name: name}]};
         } else {
-            socket.user = {name: data.user.name, rooms: [{hash: hash, name: name}]};
+            socket.user = {name: data.user.name, icon: data.user.icon, rooms: [{hash: hash, name: name}]};
         }
 
         console.log('socket rooms', socket.user);
@@ -81,19 +82,31 @@ io.on('connection', function (socket) {
     });
 
     socket.on('send_message', ({message, roomId}) => {
-        socket.broadcast.to(roomId).emit('message', {author: socket.user.name, text: message, date: Date.now(), roomId});
+        socket.broadcast.to(roomId).emit('message', {
+            author: socket.user.name,
+            text: message,
+            date: Date.now(),
+            icon: socket.user.icon,
+            roomId
+        });
     });
 
+    socket.on('start_typing', ({user, roomId}) => {
+        socket.broadcast.to(roomId).emit('typing_on', {user: {name: user.name, id: socket.id}, hash: roomId});
+    });
+
+    socket.on('stop_typing', ({user, roomId}) => {
+        socket.broadcast.to(roomId).emit('typing_off', {user: {name: user.name, id: socket.id}, hash: roomId});
+    });
 
     socket.on('disconnect', () => {
         console.log('disconnected');
-        if(socket.user){
+        if (socket.user) {
             socket.user.rooms.map(r => {
                 emitUsersOnline(r.hash);
             })
         }
     });
-
 });
 
 

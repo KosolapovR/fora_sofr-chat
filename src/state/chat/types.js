@@ -1,4 +1,4 @@
-const CREATE_NICKNAME = 'chat/CREATE_NICKNAME';
+const CREATE_USER = 'chat/CREATE_USER';
 const CREATE_ROOM = 'chat/CREATE_ROOM';
 const LEAVE_ROOM = 'chat/LEAVE_ROOM';
 const SEND_MESSAGE = 'chat/SEND_MESSAGE';
@@ -6,7 +6,7 @@ const SAVE_PREV_URL = 'chat/SAVE_PREV_URL';
 const SAVE_MESSAGE = 'chat/SAVE_MESSAGE';
 
 export{
-    CREATE_NICKNAME,
+    CREATE_USER,
     CREATE_ROOM,
     LEAVE_ROOM,
     SEND_MESSAGE,

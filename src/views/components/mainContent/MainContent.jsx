@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import Grid from "@material-ui/core/Grid";
 import {makeStyles} from "@material-ui/core/styles";
 import Box from '@material-ui/core/Box';
@@ -14,6 +14,7 @@ import {useHistory} from "react-router-dom";
 import {findRoom} from "../../../utils/findRoom";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import {sendMessage} from "../../../state/chat/operations";
+import {debounce} from 'lodash';
 
 const useStyle = makeStyles({
     root: {
@@ -34,7 +35,7 @@ const useStyle = makeStyles({
         cursor: 'pointer',
     },
     chatWrapper: {
-        minHeight: 'calc(100vh - 116px)',
+        minHeight: 'calc(100vh - 134px)',
     },
     roomsList: {
         borderRight: '1px solid #CCC',
@@ -43,6 +44,9 @@ const useStyle = makeStyles({
     },
     chatWindow: {
         borderRight: '1px solid #CCC',
+    },
+    createRoomBtn: {
+        background: '#CACACA'
     }
 });
 
@@ -62,6 +66,8 @@ const MainContent = ({
     const [showAlert, setShowAlert] = useState(false);
     const [joinedUserName, setJoinedUserName] = useState(null);
     const [usersOnline, setUsersOnline] = useState([]);
+    const [typing, setTyping] = useState(false);
+    const [typingUsers, setTypingUsers] = useState([]);
 
     let {id} = useParams();
 
@@ -101,7 +107,7 @@ const MainContent = ({
                 socket.emit('get_room', id);
             }
 
-            socket.emit('join_room', {user: {name: user}, room: {hash: id}});
+            socket.emit('join_room', {user, room: {hash: id}});
         }
     }, []);
 
@@ -124,38 +130,91 @@ const MainContent = ({
         });
     }, []);
 
+    useLayoutEffect (() => {
+        socket.on('typing_on', ({user, hash}) => {
+           if (hash === roomId.current) {
+                setTypingUsers([...typingUsers, {name: user.name}]);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        socket.on('typing_off', ({user, hash}) => {
+            if (hash === roomId.current) {
+                setTypingUsers(typingUsers.filter(u => u.id !== user.id));
+            }
+        });
+    }, []);
+
     const handleCreateRoom = () => {
-        socket.emit('create_room', {user: {name: user}})
+        socket.emit('create_room', {user})
     };
 
     const handleSubmit = ({message}) => {
-        socket.emit('send_message', {message, roomId: id});
-        sendMessage({text: message, date: Date.now(), roomId: id, author: 'Я', isMyMessage: true});
-        resetForm();
+        if(message){
+            socket.emit('send_message', {message, roomId: id});
+            sendMessage({text: message, date: Date.now(), roomId: id, author: 'Я', icon: user.icon, isMyMessage: true});
+            resetForm();
+        }
     };
 
     const handleLeaveRoom = () => {
         socket.emit('leave_room', id);
+        resetForm();
         leaveRoom(id);
         history.push({
             pathname: "/"
         });
     };
 
+    const typingStart = () => {
+        socket.emit('start_typing', {user, roomId: id});
+    };
+
+    const typingStop = debounce(() => {
+        socket.emit('stop_typing', {user, roomId: id});
+        setTyping(false);
+    }, 1500);
+
+    const handleTyping = () => {
+        if (!typing) {
+            typingStart();
+            setTyping(true);
+            typingStop();
+        }
+
+    };
+
     const currentRoom = rooms.find(r => r.hash === id);
+
     const roomName = currentRoom ? currentRoom.name : 'комната';
+
     const messages = currentRoom ? currentRoom.messages : [];
+
     return (
         <Box className={styles.root} display="flex" flexDirection='column' justifyContent='space-between'>
 
             <Box>
                 <Grid container justify='space-between'>
                     <Grid
+                        container
+                        justify='space-between'
                         className={styles.head}
                         item
                         xs={3}
                     >
-                        Выберите комату:
+                        <Grid item>
+                            Комнаты
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                className={styles.createRoomBtn}
+                                variant="contained"
+                                onClick={handleCreateRoom}
+                            >
+                                Создать
+                            </Button>
+                        </Grid>
                     </Grid>
                     <Grid
                         className={styles.head}
@@ -163,7 +222,7 @@ const MainContent = ({
                         xs={9}>
                         {isJoined && (
                             <>
-                                <Button>{roomName}</Button>
+                                <Button style={{background: roomName, color: '#FFF'}}>{roomName}</Button>
                                 {usersOnline && usersOnline.map(u => <span>{u.name}</span>)}
                                 <ExitToAppIcon className={styles.leaveRoom} onClick={handleLeaveRoom}/>
                             </>
@@ -179,13 +238,6 @@ const MainContent = ({
                         item
                         xs={3}>
                         <RoomsList rooms={rooms}/>
-                        <Button
-                            color='secondary'
-                            variant="contained"
-                            onClick={handleCreateRoom}
-                        >
-                            Создать новую комнату
-                        </Button>
                     </Grid>
                     <Grid
                         className={styles.chatWindow}
@@ -193,9 +245,11 @@ const MainContent = ({
                         {isJoined && (
                             <Chat
                                 handleSubmit={handleSubmit}
+                                onChange={handleTyping}
                                 showAlert={showAlert}
                                 joinedUserName={joinedUserName}
                                 messages={messages}
+                                typingUsers={typingUsers}
                                 /*messages={[{author: 'Жанна', date: 12315464545, text: 'lorem sdfsfg sfg adsad asdadsf s sfg ad SFG A ADF ASG ASD SDFDf r wef wef q q' }]}*/
                             />
                         )}
