@@ -1,9 +1,7 @@
-import React, {useState} from 'react';
-import Grid from "@material-ui/core/Grid";
-import Avatar from "@material-ui/core/Avatar";
+import React from 'react';
+import {Grid, Paper, Avatar, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+
 
 const useStyles = makeStyles({
     root: {
@@ -12,7 +10,6 @@ const useStyles = makeStyles({
         width: '280px',
         margin: '20px auto',
         background: '#DDD'
-
     },
     avatar: {
         textAlign: 'center',
@@ -35,7 +32,6 @@ const useStyles = makeStyles({
     }
 });
 
-
 function IconsList({handleChange, selectedIcon}) {
 
     const styles = useStyles();
@@ -44,6 +40,7 @@ function IconsList({handleChange, selectedIcon}) {
         handleChange(e.target.src);
     };
 
+    //генерируем спискок автарок
     let avatars = new Array(12);
     avatars = avatars
         .fill(0)
@@ -59,7 +56,7 @@ function IconsList({handleChange, selectedIcon}) {
                 Текущая аватарка:
             </Typography>
             <Avatar className={styles.currentAvatar} alt='avatar' src={selectedIcon}/>
-            <Grid  container justify="space-around">
+            <Grid container justify="space-around">
                 {avatars}
             </Grid>
         </Paper>

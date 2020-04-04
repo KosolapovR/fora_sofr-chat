@@ -1,29 +1,17 @@
-import React from 'react';
-import {fade, makeStyles} from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Badge from '@material-ui/core/Badge';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Container from "@material-ui/core/Container";
+import React, {useState} from 'react';
 import {connect} from "react-redux";
-import Avatar from "@material-ui/core/Avatar";
+import {fade, makeStyles} from '@material-ui/core/styles';
+import {AppBar, Toolbar, IconButton, Typography, MenuItem, Container, Menu, Avatar} from '@material-ui/core';
+import {exit} from "../../../state/chat";
 
 const useStyles = makeStyles(theme => ({
+    appBar: {
+        background: theme.palette.primary.main
+    },
     grow: {
         flexGrow: 1,
     },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-    },
+    title: {},
     nickname: {
         padding: '20px 7px'
     },
@@ -69,6 +57,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     sectionMobile: {
+        padding: 0,
         display: 'flex',
         [theme.breakpoints.up('md')]: {
             display: 'none',
@@ -76,10 +65,12 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TopNavigation = ({user}) => {
+const TopNavigation = ({user, exit}) => {
+
     const classes = useStyles();
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
 
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -101,7 +92,8 @@ const TopNavigation = ({user}) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
-    const menuId = 'primary-search-account-menu';
+    const menuId = 'primary-account-menu';
+
     const renderMenu = (
         <Menu
             anchorEl={anchorEl}
@@ -112,11 +104,12 @@ const TopNavigation = ({user}) => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={handleMenuClose}>Exit</MenuItem>
+            <MenuItem onClick={exit}>Выйти из приложения</MenuItem>
         </Menu>
     );
 
-    const mobileMenuId = 'primary-search-account-menu-mobile';
+    const mobileMenuId = 'primary-account-menu-mobile';
+
     const renderMobileMenu = (
         <Menu
             anchorEl={mobileMoreAnchorEl}
@@ -127,52 +120,29 @@ const TopNavigation = ({user}) => {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem>
-                <IconButton aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="secondary">
-                        <MailIcon/>
-                    </Badge>
-                </IconButton>
-                <p>Messages</p>
-            </MenuItem>
-            <MenuItem>
-                <IconButton aria-label="show 11 new notifications" color="inherit">
-                    <Badge badgeContent={11} color="secondary">
-                        <NotificationsIcon/>
-                    </Badge>
-                </IconButton>
-                <p>Notifications</p>
-            </MenuItem>
-            <MenuItem onClick={handleProfileMenuOpen}>
-                <IconButton
-                    aria-label="account of current user"
-                    aria-controls="primary-search-account-menu"
-                    aria-haspopup="true"
-                    color="inherit"
-                >
-                    <Avatar alt='avatar' src={user.icon}/>
-                </IconButton>
-                <p>Profile</p>
-            </MenuItem>
+            <MenuItem onClick={exit}>Выйти из приложения</MenuItem>
         </Menu>
     );
 
     return (
         <div className={classes.grow}>
-            <AppBar position="static">
+            <AppBar position="static" className={classes.appBar}>
                 <Container maxWidth='lg'>
-                    <Toolbar>
-                        <Typography className={classes.title} variant="h6" noWrap>
-                            CHAT ROOM
+                    <Toolbar disableGutters={true}>
+                        <Typography
+                            className={classes.title}
+                            variant="h6"
+                            noWrap
+                        >
+                            MY FIRST WS CHAT
                         </Typography>
                         <div className={classes.grow}/>
                         <div className={classes.sectionDesktop}>
-{/*                            <IconButton aria-label="show 4 new mails" color="inherit">
-                                <Badge badgeContent={4} color="secondary">
-                                    <MailIcon/>
-                                </Badge>
-                            </IconButton>*/}
-                            <Typography  className={classes.nickname} component="span" noWrap>
+                            <Typography
+                                className={classes.nickname}
+                                component="span"
+                                noWrap
+                            >
                                 {user.name}
                             </Typography>
                             <IconButton
@@ -193,8 +163,9 @@ const TopNavigation = ({user}) => {
                                 aria-haspopup="true"
                                 onClick={handleMobileMenuOpen}
                                 color="inherit"
+                                style={{padding: 0}}
                             >
-                                <MoreIcon/>
+                                <Avatar alt='avatar' src={user.icon}/>
                             </IconButton>
                         </div>
                     </Toolbar>
@@ -207,8 +178,8 @@ const TopNavigation = ({user}) => {
 };
 
 const mapStateToProps = state => ({
-    user: state.chat.user
+    user: state.chat.user,
 });
 
-export default connect(mapStateToProps, {})(TopNavigation);
+export default connect(mapStateToProps, {exit})(TopNavigation);
 

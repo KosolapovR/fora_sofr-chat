@@ -5,7 +5,9 @@ const useStyles = makeStyles({
     root: {
         color: '#acacac',
         fontStyle: 'italic',
-        margin: '8px'
+        margin: '8px auto',
+        maxWidth: '660px'
+
     }
 });
 

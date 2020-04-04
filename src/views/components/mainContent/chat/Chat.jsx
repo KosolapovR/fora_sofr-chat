@@ -9,10 +9,11 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        boxShadow: 'inset 2px 2px 5px rgba(154, 147, 140, 0.5), 1px 1px 5px rgba(255, 255, 255, 1)',
+        background: '#efefef',
         position: 'relative',
         height: '100%'
     },
-    messages: {},
     form: {
         display: 'flex',
         justifyContent: 'space-between'
@@ -25,8 +26,12 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1
     },
     chatHistory: {
-        height: 'calc(100vh - 240px)',
-        padding: '50px 30px 20px',
+        height: `${window.innerHeight - 255}px`,
+        padding: '5px 30px',
+        [theme.breakpoints.down('sm')]: {
+            padding: '5px 5px 20px',
+            height: `${window.innerHeight - 215}px`,
+        },
     }
 }));
 
@@ -35,21 +40,29 @@ function Chat({handleSubmit, joinedUserName, showAlert, onChange, typingUsers, m
     const styles = useStyles();
 
     return (
-        <Box className={styles.root} display="flex" flexDirection="column" justifyContent='space-between'>
+        <Box
+            className={styles.root}
+            display="flex"
+            flexDirection="column"
+            justifyContent='space-between'
+        >
             <TransitionAlert name={joinedUserName} show={showAlert}/>
-            <Box className={styles.messages} flexGrow={1}>
-                <Grid className={styles.chatWrapper} container justify='space-between' direction='column'>
-                    <Grid item>
-                        <ScrollToBottom className={styles.chatHistory}>
-                            {messages.map((m, i) => <ChatMessage key={i} message={m}/>)}
-                        </ScrollToBottom>
-                    </Grid>
-                    <Grid item>
-                        {typingUsers.length > 0 ? (typingUsers.map(u => <TypingSpinner name={u.name}/>)) :
-                            <div style={{height: '34px'}}></div>}
-                    </Grid>
+            <Grid
+                className={styles.chatWrapper}
+                container
+                justify='space-between'
+                direction='column'
+            >
+                <Grid item>
+                    <ScrollToBottom className={styles.chatHistory}>
+                        {messages.map((m, i) => <ChatMessage key={i} message={m}/>)}
+                    </ScrollToBottom>
                 </Grid>
-            </Box>
+                <Grid item>
+                    {typingUsers.length > 0 ? (typingUsers.map(u => <TypingSpinner name={u.name}/>)) :
+                        <div style={{height: '34px'}}></div>}
+                </Grid>
+            </Grid>
             <Box>
                 <ChatForm onSubmit={handleSubmit} onChange={onChange}/>
             </Box>

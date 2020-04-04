@@ -1,27 +1,19 @@
 const shortHash = require("short-hash");
 
-var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+const app = require('express')();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
-const port = 6600;
+const port = 8080;
 
 let rooms = [];
-
-const getUsersInRoom = (roomHash) => {
-
-    /*
-    ;
-    return ;*/
-};
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-
 io.on('connection', function (socket) {
-    console.log('a user connected');
+
     socket.on('newUser', user => {
         socket.user = user;
     });
@@ -49,19 +41,32 @@ io.on('connection', function (socket) {
     });
 
     socket.on('create_room', data => {
+
+        //генерируем короткий хэш для комнаты
         const hash = shortHash((Math.random() * 100000).toString());
-        const name = getColorName();
+        const name = getRoomName();
 
         socket.join(hash);
-
         rooms = [...rooms, {hash: hash, name: name}];
+
         if (socket.user) {
-            socket.user = {...socket.user, rooms: [...socket.user.rooms, {hash: hash, name: name}]};
+            socket.user = {
+                ...socket.user,
+                rooms: [
+                    ...socket.user.rooms,
+                    {hash: hash, name: name}
+                ]
+            };
         } else {
-            socket.user = {name: data.user.name, icon: data.user.icon, rooms: [{hash: hash, name: name}]};
+            socket.user = {
+                name: data.user.name,
+                icon: data.user.icon,
+                rooms: [
+                    {hash: hash, name: name}
+                ]
+            };
         }
 
-        console.log('socket rooms', socket.user);
         socket.emit('room', {name, hash})
     });
 
@@ -69,12 +74,12 @@ io.on('connection', function (socket) {
         emitUsersOnline(data.id);
     });
 
-
     socket.on('get_room', (hash) => {
+
+        //получаем комнату по хэшу
         const room = rooms.find(r => r.hash === hash);
         socket.emit('room', room)
     });
-
 
     socket.on('leave_room', (hash) => {
         socket.leave(hash);
@@ -109,11 +114,11 @@ io.on('connection', function (socket) {
     });
 });
 
-
 http.listen(port, function () {
     console.log(`listening on *:${port}`);
 });
 
+//оповещает о пользователях онлайн в заданной комнате
 function emitUsersOnline(roomHash) {
     if (io.nsps["/"].adapter.rooms[roomHash]) {
         const clients = io.nsps["/"].adapter.rooms[roomHash].sockets;
@@ -125,11 +130,13 @@ function emitUsersOnline(roomHash) {
     }
 }
 
-function getColorName() {
-    const colors = [
-        'gray', 'silver', 'black', 'red', 'maroon', 'yellow',
-        'olive', 'lime', 'green', 'aqua', 'teal', 'blue',
-        'navy', 'fuchsia', 'purple', 'orange'
+//генерирует случайное название комнаты
+function getRoomName() {
+    const rooms = [
+        'New-York', 'Moscow', 'London', 'Berlin', 'Rome', 'Tokyo',
+        'Canberra', 'Ottawa', 'Prague', 'Tallinn', 'Helsinki', 'Oslo',
+        'Athens', 'Dublin', 'Jakarta', 'Seoul', 'Riga', 'Nairobi',
+        'Monaco', 'Amsterdam', 'Wellington', 'Lisbon', 'Warsaw', 'Dakar',
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return rooms[Math.floor(Math.random() * rooms.length)];
 }

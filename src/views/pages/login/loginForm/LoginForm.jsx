@@ -1,6 +1,5 @@
 import React from 'react';
-import {Input, TextField} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import {TextField, Button} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {Field, reduxForm} from "redux-form";
 import IconsList from "../iconsList";
@@ -16,10 +15,7 @@ const useStyles = makeStyles({
     }
 });
 
-const renderedInput = ({input, meta: {touched, error, warning}}) => {
-    if (error) {
-        console.log(error);
-    }
+const renderedInput = ({input, meta: {touched, error}}) => {
     return (<>
         {touched && error ?
             <TextField

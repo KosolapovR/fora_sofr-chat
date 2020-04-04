@@ -1,4 +1,12 @@
-import {CREATE_USER, CREATE_ROOM, LEAVE_ROOM, SAVE_MESSAGE, SAVE_PREV_URL, SEND_MESSAGE} from "./types";
+import {
+    CREATE_USER,
+    CREATE_ROOM,
+    LEAVE_ROOM,
+    SAVE_MESSAGE,
+    SAVE_PREV_URL,
+    SEND_MESSAGE,
+    RESET_NEW_MESSAGE_COUNT, EXIT
+} from "./types";
 
 let rooms = JSON.parse(sessionStorage.getItem('rooms'));
 if (!rooms) rooms = [];
@@ -25,7 +33,6 @@ const reducer = (state = initialState, action) => {
             }
         }
         case LEAVE_ROOM: {
-            debugger;
             return {...state, rooms: action.payload};
         }
         case SEND_MESSAGE: {
@@ -60,7 +67,6 @@ const reducer = (state = initialState, action) => {
             const index = state.rooms.findIndex(r => r.hash === action.payload.roomId);
             const newRooms = [...state.rooms];
 
-
             newRooms[index].messages = newRooms[index].messages
                 ?
                 [...state.rooms[index].messages, {
@@ -77,7 +83,24 @@ const reducer = (state = initialState, action) => {
                     icon: action.payload.icon,
                 }];
 
+            if (action.payload.roomId !== action.payload.currentRoomId) {
+                newRooms[index].newMessagesCount = newRooms[index].newMessagesCount ? newRooms[index].newMessagesCount + 1 : 1;
+            }
+
             return {...state, rooms: newRooms};
+        }
+        case RESET_NEW_MESSAGE_COUNT: {
+            const index = state.rooms.findIndex(r => r.hash === action.payload);
+
+            if (index >= 0) {
+                const newRooms = [...state.rooms];
+                newRooms[index].newMessagesCount = null;
+                return {...state, rooms: newRooms};
+            }
+            return state
+        }
+        case EXIT: {
+            return {...state, user: null, rooms: null}
         }
         default: {
             return state

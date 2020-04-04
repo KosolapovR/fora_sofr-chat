@@ -1,18 +1,18 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
-import IconButton from '@material-ui/core/IconButton';
-import Collapse from '@material-ui/core/Collapse';
-import Button from '@material-ui/core/Button';
+import {IconButton, Collapse} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'absolute',
+        zIndex: '1000',
         left: '50%',
         transform: 'translate(-50%)',
         opacity: '0.7',
         width: '30%',
+        minWidth: '200px',
         '& > * + *': {
             marginTop: theme.spacing(2),
         },
@@ -22,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
 export default function TransitionAlert({name, show}) {
 
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+
     useEffect(() => {
         setOpen(show);
         setTimeout(() => {
@@ -35,6 +36,7 @@ export default function TransitionAlert({name, show}) {
         <div className={classes.root}>
             <Collapse in={open}>
                 <Alert
+                    variant='filled'
                     action={
                         <IconButton
                             aria-label="close"

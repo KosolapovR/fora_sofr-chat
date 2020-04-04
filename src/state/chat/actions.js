@@ -4,7 +4,7 @@ import {
     LEAVE_ROOM,
     SAVE_MESSAGE,
     SAVE_PREV_URL,
-    SEND_MESSAGE
+    SEND_MESSAGE, RESET_NEW_MESSAGE_COUNT, EXIT
 } from "./types";
 
 const createUserAC = payload => ({
@@ -37,11 +37,22 @@ const saveMessageAC = payload => ({
     payload
 });
 
+const resetNewMessageCountAC = payload => ({
+    type: RESET_NEW_MESSAGE_COUNT,
+    payload
+});
+
+const exitAC = () => ({
+    type: EXIT
+});
+
 export {
     createUserAC,
     createRoomAC,
     leaveRoomAC,
     sendMessageAC,
     savePrevUrlAC,
-    saveMessageAC
+    saveMessageAC,
+    resetNewMessageCountAC,
+    exitAC
 }

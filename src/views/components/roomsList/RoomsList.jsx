@@ -1,31 +1,38 @@
-import React, {useRef} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
+import React, {Fragment, useEffect, useRef} from 'react';
 import {useHistory, useParams} from "react-router-dom";
 import {reset} from "redux-form";
 import {connect} from "react-redux";
+import {makeStyles} from '@material-ui/core/styles';
+import {List, ListItem, Divider, Badge, Menu, MenuItem, ListItemText, Button, Hidden} from '@material-ui/core';
+import MailIcon from '@material-ui/icons/Mail';
+import {resetNewMessageCount} from "../../../state/chat";
 
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         maxWidth: '36ch',
-        backgroundColor: theme.palette.background.paper,
     },
     inline: {
         display: 'inline',
     },
+    selectRoomBtn: {
+        background: theme.palette.secondary.light,
+    },
+    mailIcon: {
+        margin: `0 5px`,
+    }
 }));
 
-const RoomsList = ({rooms, resetForm}) => {
+const RoomsList = ({rooms, resetForm, resetMsgCount, handleClose}) => {
     const classes = useStyles();
 
     let {id} = useParams();
 
     const roomId = useRef(id);
+    useEffect(() => {
+        if (roomId.current)
+            resetMsgCount(roomId.current);
+    }, [roomId.current]);
 
     const history = useHistory();
 
@@ -34,34 +41,58 @@ const RoomsList = ({rooms, resetForm}) => {
         history.push({
             pathname: `/room/${room.hash}`
         });
+        resetMsgCount(room.hash);
     };
 
-
     return (
-        <List className={classes.root}>
-            {rooms && rooms.map((r, index) => <>
-                <ListItem key={index} alignItems="flex-start">
-                    <ListItemText
-                        primary={
-                            <Button
-                                color='primary'
-                                style={{color: r.name, background: '#DEDEDE', fontWeight: 600, width:'100%'}}
-                                onClick={() => {handleSelectRoom(r)}}
-                            >
-                                {r.name}
-                            </Button>
-                        }
-                    />
-                </ListItem>
-                <Divider component="li"/>
-            </>)}
-        </List>
+        <>
+            <Hidden xsDown>
+                <List className={classes.root}>
+                    {rooms && rooms.map((r, index) => <Fragment key={index}>
+                        <ListItem alignItems="flex-start">
+                            <ListItemText
+                                primary={
+                                    <Button
+                                        className={classes.selectRoomBtn}
+                                        variant='contained'
+                                        fullWidth
+                                        onClick={() => {
+                                            handleSelectRoom(r)
+                                        }}
+                                    >
+                                        {r.name}
+                                        {r.newMessagesCount &&
+                                        <Badge badgeContent={r.newMessagesCount} color="primary">
+                                            <MailIcon className={classes.mailIcon}/>
+                                        </Badge>}
+                                    </Button>
+                                }
+                            />
+                        </ListItem>
+                        <Divider component="li"/>
+                    </Fragment>)}
+                </List>
+            </Hidden>
+            <Hidden smUp>
+                {rooms && rooms.map((r, index) =>
+                    <MenuItem
+                        key={index}
+                        onClick={() => {
+                            handleClose();
+                            handleSelectRoom(r);
+                        }}
+                    >
+                        {r.name}
+                    </MenuItem>
+                )}
+            </Hidden></>
     );
 };
 
 function mapDispatchToProps(dispatch) {
     return {
-        resetForm: () => dispatch(reset('messageForm'))
+        resetForm: () => dispatch(reset('messageForm')),
+        resetMsgCount: (id) => dispatch(resetNewMessageCount(id))
     }
 }
 

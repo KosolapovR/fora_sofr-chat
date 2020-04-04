@@ -7,10 +7,21 @@ import {Redirect} from "react-router-dom";
 import openSocket from "socket.io-client";
 import {savePrevUrl} from "../../../state/chat";
 import {useParams} from "react-router-dom";
+import {makeStyles} from "@material-ui/styles";
 
-const socket = openSocket('http://localhost:6600');
+const socket = openSocket('http://localhost:8080');
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        [theme.breakpoints.down('xs')]: {
+            padding: '0',
+        },
+    }
+}));
 
 const ChatApp = ({user, isJoined, savePrevUrl, prevUrl}) => {
+
+    const styles = useStyles();
 
     let id = useParams();
 
@@ -22,6 +33,7 @@ const ChatApp = ({user, isJoined, savePrevUrl, prevUrl}) => {
             <>
                 <TopNavigation/>
                 <Container
+                    className={styles.root}
                     maxWidth='lg'>
                     <MainContent isJoined={isJoined} socket={socket}/>
                 </Container>

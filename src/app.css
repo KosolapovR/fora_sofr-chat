@@ -5,6 +5,10 @@
     font-family: 'Roboto', sans-serif;
 }
 
+#root{
+    min-width: 320px;
+}
+
 ul li{
     list-style: none;
 }

@@ -4,6 +4,8 @@ const LEAVE_ROOM = 'chat/LEAVE_ROOM';
 const SEND_MESSAGE = 'chat/SEND_MESSAGE';
 const SAVE_PREV_URL = 'chat/SAVE_PREV_URL';
 const SAVE_MESSAGE = 'chat/SAVE_MESSAGE';
+const RESET_NEW_MESSAGE_COUNT = 'chat/RESET_NEW_MESSAGE_COUNT';
+const EXIT = 'chat/EXIT';
 
 export{
     CREATE_USER,
@@ -11,5 +13,7 @@ export{
     LEAVE_ROOM,
     SEND_MESSAGE,
     SAVE_PREV_URL,
-    SAVE_MESSAGE
+    SAVE_MESSAGE,
+    RESET_NEW_MESSAGE_COUNT,
+    EXIT
 }

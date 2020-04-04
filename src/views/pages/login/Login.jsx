@@ -12,6 +12,8 @@ const Login = ({createUser, user, prevUrl}) => {
         createUser({name: nickname, icon: selectedIcon});
     };
 
+    //если пользователь зашел по ссылке,
+    //после авторизации редиректим на эту ссылку
     const redirectUrl = prevUrl ? `/room/${prevUrl}` : "/";
 
     return (

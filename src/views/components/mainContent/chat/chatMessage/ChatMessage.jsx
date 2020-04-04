@@ -1,9 +1,6 @@
 import React from 'react';
 import {makeStyles} from "@material-ui/core/styles";
-import Avatar from "@material-ui/core/Avatar";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import {Box} from "@material-ui/core";
+import {Box, Avatar, Grid, Typography} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     msgLeft: {
@@ -11,10 +8,15 @@ const useStyles = makeStyles((theme) => ({
         margin: '10px auto',
         padding: '8px, 16px',
         listStyle: 'none',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        [theme.breakpoints.down('sm')]: {
+            maxWidth: '500px',
+        },
+        [theme.breakpoints.down('xs')]: {
+            maxWidth: '96%',
+        },
     },
     msgAuthor: {
-        maxWidth: 'min-content',
         textAlign: 'center',
         fontSize: '14px',
         padding: '5px 10px',
@@ -36,17 +38,26 @@ const useStyles = makeStyles((theme) => ({
         minWidth: '110px',
         padding: '14px',
         borderRadius: '8px',
-        color: '#FFF',
         lineHeight: '20px',
         overflow: 'hidden',
-        boxShadow: '2px 2px 5px 1px rgba(0, 0, 0, 0.3)'
+        boxShadow: '2px 2px 5px 1px rgba(0, 0, 0, 0.3)',
+        color: '#000',
+        [theme.breakpoints.up('sm')]: {
+            maxWidth: '400px',
+        },
+        [theme.breakpoints.down('sm')]: {
+            maxWidth: '300px',
+        },
+        [theme.breakpoints.down('xs')]: {
+            maxWidth: '230px',
+        },
     },
     myMsg: {
         textAlign: 'right',
-        background: '#86BB71',
+        background: theme.palette.primary.main,
     },
     otherMsg: {
-        background: '#94C2ED',
+        background: '#fff',
     },
     otherName: {
         textAlign: 'right'
@@ -59,17 +70,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 function ChatMessage({message}) {
     const {author, text, date} = message;
-    const msgDate = (new Date(date)).toISOString().substring(0, 10)
+
+    //форматируем вывод даты
+    const msgDate = (new Date(date)).toISOString().substring(0, 10);
     const msgTime = (new Date(date)).getHours() + ':' + (new Date(date)).getMinutes();
     const time = msgDate + ' ' + msgTime;
     const styles = useStyles();
 
     if (message.isMyMessage) {
         return (
-            <Grid className={styles.msgLeft} container justify='flex-end' wrap='nowrap'>
+            <Grid
+                className={styles.msgLeft}
+                container
+                justify='flex-end'
+                wrap='nowrap'
+            >
                 <Grid item>
                     <Box className={`${styles.msgText} ${styles.myMsg}`}>
                         {text}
@@ -90,7 +107,11 @@ function ChatMessage({message}) {
         )
     } else {
         return (
-            <Grid className={styles.msgLeft} container wrap='nowrap'>
+            <Grid
+                className={styles.msgLeft}
+                container
+                wrap='nowrap'
+            >
                 <Grid item>
                     <Typography
                         className={styles.msgAuthor}

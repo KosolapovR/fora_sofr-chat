@@ -1,4 +1,12 @@
-import {createUser, createRoom, savePrevUrl, leaveRoom, saveMessage} from "./operations";
+import {
+    createUser,
+    createRoom,
+    savePrevUrl,
+    leaveRoom,
+    saveMessage,
+    resetNewMessageCount,
+    exit
+} from "./operations";
 import {default as reducer} from './reducers';
 
 export {
@@ -6,7 +14,8 @@ export {
     leaveRoom,
     createRoom,
     savePrevUrl,
-    saveMessage
+    saveMessage,
+    resetNewMessageCount,
+    exit
 }
-
 export default reducer;

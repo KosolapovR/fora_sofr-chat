@@ -6,7 +6,7 @@ import {BrowserRouter} from "react-router-dom";
 import {configureStore} from "./state/store";
 
 const store = configureStore();
-console.log(store.getState());
+
 ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
