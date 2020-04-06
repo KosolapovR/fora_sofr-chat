@@ -31,7 +31,7 @@ const ChatApp = ({user, isJoined, savePrevUrl, prevUrl}) => {
     } else {
         return (
             <>
-                <TopNavigation/>
+                <TopNavigation socket={socket}/>
                 <Container
                     className={styles.root}
                     maxWidth='lg'>

@@ -65,7 +65,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TopNavigation = ({user, exit}) => {
+const TopNavigation = ({user, exit, socket, rooms}) => {
 
     const classes = useStyles();
 
@@ -92,6 +92,16 @@ const TopNavigation = ({user, exit}) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
 
+    const handleExit = () => {
+        //выкидываем пользователя из всех комнат
+        const hashes = rooms.map(r => r.hash);
+        hashes.forEach(
+            h => socket.emit('leave_room', h)
+        );
+
+        exit();
+    };
+
     const menuId = 'primary-account-menu';
 
     const renderMenu = (
@@ -104,7 +114,7 @@ const TopNavigation = ({user, exit}) => {
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
-            <MenuItem onClick={exit}>Выйти из приложения</MenuItem>
+            <MenuItem onClick={handleExit}>Выйти из приложения</MenuItem>
         </Menu>
     );
 
@@ -120,7 +130,7 @@ const TopNavigation = ({user, exit}) => {
             open={isMobileMenuOpen}
             onClose={handleMobileMenuClose}
         >
-            <MenuItem onClick={exit}>Выйти из приложения</MenuItem>
+            <MenuItem onClick={handleExit}>Выйти из приложения</MenuItem>
         </Menu>
     );
 
@@ -179,6 +189,7 @@ const TopNavigation = ({user, exit}) => {
 
 const mapStateToProps = state => ({
     user: state.chat.user,
+    rooms: state.chat.rooms
 });
 
 export default connect(mapStateToProps, {exit})(TopNavigation);
