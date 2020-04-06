@@ -59,7 +59,7 @@ function Chat({handleSubmit, joinedUserName, showAlert, onChange, typingUsers, m
                     </ScrollToBottom>
                 </Grid>
                 <Grid item>
-                    {typingUsers.length > 0 ? (typingUsers.map(u => <TypingSpinner name={u.name}/>)) :
+                    {typingUsers.length > 0 ? (typingUsers.map((u, i) => <TypingSpinner key={i} name={u.name}/>)) :
                         <div style={{height: '34px'}}></div>}
                 </Grid>
             </Grid>

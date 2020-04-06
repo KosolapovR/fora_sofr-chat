@@ -3,7 +3,7 @@ import {useHistory, useParams} from "react-router-dom";
 import {reset} from "redux-form";
 import {connect} from "react-redux";
 import {makeStyles} from '@material-ui/core/styles';
-import {List, ListItem, Divider, Badge, Menu, MenuItem, ListItemText, Button, Hidden} from '@material-ui/core';
+import {List, ListItem, Divider, Badge, MenuItem, ListItemText, Button, Hidden} from '@material-ui/core';
 import MailIcon from '@material-ui/icons/Mail';
 import {resetNewMessageCount} from "../../../state/chat";
 
@@ -32,7 +32,7 @@ const RoomsList = ({rooms, resetForm, resetMsgCount, handleClose}) => {
     useEffect(() => {
         if (roomId.current)
             resetMsgCount(roomId.current);
-    }, [roomId.current]);
+    }, [resetMsgCount]);
 
     const history = useHistory();
 

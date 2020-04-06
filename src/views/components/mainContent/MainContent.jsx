@@ -11,7 +11,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import RoomsList from "../roomsList";
 import Chat from "./chat";
-import {createRoom, leaveRoom, resetNewMessageCount, saveMessage} from "../../../state/chat";
+import {createRoom, leaveRoom, saveMessage} from "../../../state/chat";
 import {sendMessage} from "../../../state/chat/operations";
 import WelcomePage from "./welcomePage";
 import UsersOnline from "./usersOnline";
@@ -79,8 +79,6 @@ const MainContent = ({
     const [anchorEl2, setAnchorEl2] = React.useState(null);
 
     const handleClick = (event) => {
-
-        console.log(event.currentTarget);
         setAnchorEl(event.currentTarget);
     };
 
@@ -89,7 +87,6 @@ const MainContent = ({
     };
 
     const handleClick2 = (event) => {
-        console.log(event.currentTarget);
         setAnchorEl2(event.currentTarget);
     };
 
@@ -135,7 +132,6 @@ const MainContent = ({
     }, []);
 
     useEffect(() => {
-        console.log('сменился url')
         socket.emit('get_users_in_room', {id});
     }, [id]);
 
