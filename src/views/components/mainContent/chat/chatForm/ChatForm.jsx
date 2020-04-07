@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {Field, reduxForm} from "redux-form";
@@ -61,15 +61,19 @@ const renderedInput = ({input}) => {
 const ChatForm = ({handleSubmit, messageForm, onChange, change}) => {
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const [emoji, setEmoji] = useState('');
 
     const onEmojiClick = (event, emojiObject) => {
-        if (messageForm && messageForm.values) {
-            change('message', messageForm.values.message + emojiObject.emoji);
-        } else {
-            change('message', emojiObject.emoji);
-        }
-        handleClose();
+        setEmoji(emojiObject.emoji);
     };
+
+    useEffect(()=>{
+        if (messageForm && messageForm.values) {
+            change('message', messageForm.values.message + emoji);
+        } else {
+            change('message', emoji);
+        }
+    }, [emoji]);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
